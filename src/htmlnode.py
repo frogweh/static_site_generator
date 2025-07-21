@@ -17,3 +17,11 @@ class HTMLNode:
             for key, value in self.props.items():
                 tmp += (f' {key}="{value}"')
             return tmp
+
+    class LeafNode():
+        def __init__(self, tag = None, value):
+            self.tag = tag
+            self.value = value
+
+        def to_html(self):
+            raise NotImplementedError("Not written yet")
