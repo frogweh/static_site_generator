@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, TextType, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link
+from textnode import TextNode, TextType, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes
 
 
 class TestTextNode(unittest.TestCase):
@@ -81,6 +81,25 @@ class TestTextNode(unittest.TestCase):
                 TextNode("link too", TextType.link, "https://www.google.com"),
             ],
             new_nodes,
+        )
+
+    def test_text_to_textnodes(self):
+        text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        nodes = text_to_textnodes(text)
+        self.assertListEqual(
+                [
+                    TextNode("This is ", TextType.text),
+                    TextNode("text", TextType.bold),
+                    TextNode(" with an ", TextType.text),
+                    TextNode("italic", TextType.italic),
+                    TextNode(" word and a ", TextType.text),
+                    TextNode("code block", TextType.code),
+                    TextNode(" and an ", TextType.text),
+                    TextNode("obi wan image", TextType.image, "https://i.imgur.com/fJRm4Vk.jpeg"),
+                    TextNode(" and a ", TextType.text),
+                    TextNode("link", TextType.link, "https://boot.dev"),
+                ],
+                nodes,
         )
 
 if __name__ == "__main__":

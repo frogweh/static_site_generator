@@ -13,7 +13,6 @@ class TextNode():
         self.text = text
         self.text_type = text_type
         self.url = url
-
     def __eq__(self, obj):
         if not isinstance(obj, TextNode):
             return False
@@ -23,7 +22,6 @@ class TextNode():
                 self.text_type == obj.text_type and
                 self.url == obj.url
             )
-
     def __repr__(self):
         return (f"TextNode({self.text}, {self.text_type.value}, {self.url})")
 
@@ -82,7 +80,7 @@ def split_nodes_link(old_nodes):
     final = []
     for node in old_nodes:
         if node.text_type != TextType.text:
-            final.append(TextNode(node.text, node.text_type))
+            final.append(TextNode(node.text, node.text_type, node.url))
             continue
         links = extract_markdown_links(node.text)
         new_node = node.text
@@ -96,8 +94,19 @@ def split_nodes_link(old_nodes):
             final.append(TextNode(i[0], TextType.link, i[1]))
             new_node = new_node[1]
         if len(new_node) > 0:
-            final.append(TextNode(new_node, TextType.text))
+            final.append(TextNode(node.text, node.text_type, node.url))
     return final
 
-
-
+def text_to_textnodes(text):
+    node = TextNode(text, TextType.text)
+    return split_nodes_link(
+            split_nodes_image(
+                split_nodes_delimiter(
+                    split_nodes_delimiter(
+                        split_nodes_delimiter(
+                            [node], "**", TextType.bold
+                    ), "_", TextType.italic
+                ), "`", TextType.code
+            )
+        )
+    )
