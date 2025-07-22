@@ -18,10 +18,38 @@ class HTMLNode:
                 tmp += (f' {key}="{value}"')
             return tmp
 
-    class LeafNode():
-        def __init__(self, tag = None, value):
-            self.tag = tag
-            self.value = value
+class LeafNode(HTMLNode):
+    def __init__(self, tag, value, props = None):
+        super().__init__(tag=tag, value=value, children=None, props=props)
 
-        def to_html(self):
-            raise NotImplementedError("Not written yet")
+    def to_html(self):
+        if not self.value:
+            raise ValueError("LeafNode must have a value.")
+            
+        if not self.tag:
+            return self.value
+
+        if not self.props:
+            return (f"<{self.tag}>{self.value}</{self.tag}>")
+        else:
+            return (f'<{self.tag}{super().props_to_html()}>{self.value}</{self.tag}>')
+
+class ParentNode(HTMLNode):
+    def __init__(self, tag, children, props=None):
+        super().__init__(tag=tag, value=None, children=children, props=props)
+
+    def to_html(self):
+        if not self.tag:
+            raise ValueError("ParentNode must have a tag.")
+
+        if self.children is None:
+            raise ValueError("ParentNode must have children otherwise it's a LeafNode.")
+
+        tmp = ""
+        for i in self.children:
+            tmp += i.to_html()
+
+        if not self.props:
+            return (f'<{self.tag}>{tmp}</{self.tag}>')
+        else:
+            return (f'<{self.tag}{super().props_to_html()}>{tmp}</{self.tag}>')
