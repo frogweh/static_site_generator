@@ -18,7 +18,6 @@ class TextNode():
         if not isinstance(obj, TextNode):
             return False
         else:
-
             return (
                 self.text == obj.text and
                 self.text_type == obj.text_type and
@@ -27,3 +26,6 @@ class TextNode():
 
     def __repr__(self):
         return (f"TextNode({self.text}, {self.text_type.value}, {self.url})")
+
+
+

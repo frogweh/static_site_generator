@@ -1,6 +1,7 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode, ParentNode
+from htmlnode import HTMLNode, LeafNode, ParentNode, text_node_to_html_node
+from textnode import TextNode, TextType
 
 class TestHTMLNode(unittest.TestCase):
     def test_props_to_html_eq(self):
@@ -65,6 +66,44 @@ class TestHTMLNode(unittest.TestCase):
 
     def test_to_html_with_empty_list(self):
         self.assertEqual(ParentNode("div", []).to_html(), "<div></div>")
+
+    def test_text(self):
+        node = TextNode("This is a text node", TextType.text)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, None)
+        self.assertEqual(html_node.value, "This is a text node")
+
+    def test_text_bold(self):
+        node = TextNode("This is a bold text node", TextType.bold)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "b")
+        self.assertEqual(html_node.value, "This is a bold text node")
+
+    def test_text_italic(self):
+        node = TextNode("This is an italic text node", TextType.italic)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "i")
+        self.assertEqual(html_node.value, "This is an italic text node")
+
+    def test_text_code(self):
+        node = TextNode("This is a code text node", TextType.code)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "code")
+        self.assertEqual(html_node.value, "This is a code text node")
+
+    def test_text_link(self):
+        node = TextNode("This is a link node", TextType.link, "https://www.boot.dev")
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "a")
+        self.assertEqual(html_node.value, "This is a link node")
+        self.assertEqual(html_node.props, {"href":"https://www.boot.dev"})
+
+    def test_text_image(self):
+        node = TextNode("This is an image node", TextType.image, "smb://server/share/path/image.png")
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "img")
+        self.assertEqual(html_node.value, "")
+        self.assertEqual(html_node.props, {"src" : "smb://server/share/path/image.png", "alt" : "This is an image node"})
 
 if __name__ == "__main__":
     unittest.main()
